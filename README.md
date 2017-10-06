@@ -8,4 +8,6 @@ The deck is shuffled every 6 rounds.
 
 ## Instruction
 Run python BlackJack.py in the command line. <br>
-Type 'Y' if you are ready to play the game. Type 'N' when asked 'Continue?' to quit the game.
+Type 'Y' to play the game. <br>
+Type 'Hit' to hit, and 'Stand' to stand.<br>
+After each game, the player will be asked 'Continue?'. Type 'N' to quit the game.
