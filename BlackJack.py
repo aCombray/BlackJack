@@ -1,12 +1,12 @@
 
 # coding: utf-8
 
-# In[19]:
+# In[48]:
 
 from random import shuffle
 
 
-# In[20]:
+# In[49]:
 
 def shuffle_deck():
     deck = range(2,11) * 4
@@ -15,7 +15,7 @@ def shuffle_deck():
     return deck
 
 
-# In[26]:
+# In[79]:
 
 class BlackJack :
     def __init__(self, deck) :
@@ -23,7 +23,8 @@ class BlackJack :
         self.dealer = []
         self.player = []
         self.win = False
-        self.flag = True
+        self.d_stand = False
+        self.p_stand = False
 
     def deal_p(self) :
         card = self.deck.pop()
@@ -50,7 +51,7 @@ class BlackJack :
     def dealer_play(self):
         As, n = self.count(self.dealer) 
         if n >= 17 or n + As > 17:
-            self.flag = False
+            self.d_stand = True
             return
         self.deal_d()
         
@@ -59,7 +60,8 @@ class BlackJack :
         if re == 'Hit' :
             self.deal_p()
         if re == 'Stand' :
-            return
+            self.p_stand = True
+        return
     
     def play(self) :
         def get_score(As, n) :
@@ -69,12 +71,17 @@ class BlackJack :
                     break
                 score += 10
             return score
-            
+        def display() :
+            print('The dealer\'s cards are ' + ','.join([str(x) for x in self.dealer]) + '.')
+        
+        # deal the cards
         self.deal_p()
         self.deal_d()
-        print('The dealer\'s card is {}'.format(self.dealer[0]))
         self.deal_p()
         self.deal_d()
+        print('The dealer\'s second card is {}'.format(self.dealer[1]))
+        
+        # win the game if the player hits 21 and the dealer is not 21
         p_As, p_n = self.count(self.player)
         d_As, d_n = self.count(self.dealer)
         if p_As == 1 and p_n == 10:
@@ -82,35 +89,39 @@ class BlackJack :
                 self.win = True
                 return
         
-        while True :
-            re = raw_input('Please type \'Hit\' to hit and \'Stand\' to stand ->')
-            if (self.flag is False) and (re == 'Stand') :
-                break
+        while not self.d_stand or not self.p_stand :
+            if not self.p_stand :
+                print('Your cards are '+ ','.join([str(x) for x in self.player]) + '.')
+                p_As, p_n = self.count(self.player)
+                print('Your score is {}'.format(get_score(p_As, p_n)))
+                rep = raw_input('Please type \'Hit\' to hit and \'Stand\' to stand ->')
+                self.player_play(rep)
+                p_As, p_n = self.count(self.player)
+                # bust
+                if p_As + p_n > 21 :
+                    self.win = False
+                    display()
+                    return 
             
-            self.player_play(re)
-            p_As, p_n = self.count(self.player)
-            # bust
-            if p_As + p_n > 21 :
-                self.win = False
-                return
-            
-            if self.flag :
+            if not self.d_stand :
                 self.dealer_play()
                 d_As, d_n = self.count(self.dealer)
+                # dealer bust
                 if d_As + d_n > 21 :
                     self.win = True
-                    return 
-        
+                    display()
+                    return
         p_As, p_n = self.count(self.player)
         p_score = get_score(p_As, p_n)
         d_As, d_n = self.count(self.dealer)
         d_score = get_score(d_As, d_n)
         self.win = p_score > d_score
+        display()
         return
         
 
 
-# In[ ]:
+# In[80]:
 
 def main() :
     ans = raw_input("Ready to start ? (Y/N) ->")
@@ -135,7 +146,7 @@ def main() :
                 
 
 
-# In[ ]:
+# In[81]:
 
 if __name__ == '__main__': main()
 
